@@ -56,7 +56,7 @@ const TaskSection: React.FC<TaskSectionProps> = ({
       </div>
     );
   }
-
+  console.log({ tasks });
   return (
     <VerticalStackLayout gap={7}>
       {tasks.length > 0 && (
