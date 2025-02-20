@@ -1,7 +1,10 @@
+import CommentReader from './internal/comment-reader';
+
 import {
   CreateCommentParams,
   DeleteCommentParams,
   UpdateCommentParams,
+  GetAllCommentsParams,
   Comment,
 } from './types';
 
@@ -18,5 +21,9 @@ export default class CommentService {
 
   static async deleteComment(params: DeleteCommentParams): Promise<void> {
     return CommentWriter.deleteComment(params);
+  }
+
+  static async getCommentsForTask(params: GetAllCommentsParams): Promise<Comment[]> {
+    return CommentReader.getCommentsForTask(params);
   }
 }

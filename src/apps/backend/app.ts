@@ -17,6 +17,7 @@ import { expressListRoutes } from './modules/list-routes';
 import { Logger, CustomLoggerTransport } from './modules/logger';
 import { PasswordResetTokenServer } from './modules/password-reset-token';
 import { TaskServer } from './modules/task';
+import { CommentServer } from './modules/comments';
 
 interface APIMicroserviceService {
   rootFolderPath: string;
@@ -40,7 +41,6 @@ export default class App {
     const app = this.createExperienceService();
     this.app.use('/', app);
 
-    // error logger, to be always registered at last
     this.app.use(App.getErrorLogger());
 
     Logger.info('app - attempting to start server...');
@@ -62,7 +62,6 @@ export default class App {
   }
 
   public static getAPIMicroservices(): APIMicroserviceService[] {
-    // add the new server here to the list
     return [
       {
         serverInstance: new AccountServer(),
@@ -84,16 +83,17 @@ export default class App {
         serverInstance: new TaskServer(),
         rootFolderPath: path.join(__dirname, 'modules/task'),
       },
+      {
+        serverInstance: new CommentServer(),
+        rootFolderPath: path.join(__dirname, 'modules/comments'),
+      },
     ];
   }
 
   private static createRESTApiServer(): Application {
     const app: Application = express();
 
-    // if running server in development mode, allow cross-origin calls
-    // from webpack dev server
     if (isDevEnv) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       app.use(
         cors({
           origin: 'http://localhost:3000',
@@ -133,15 +133,10 @@ export default class App {
   private static getRequestLogger(): express.Handler {
     return expressWinston.logger({
       transports: [new CustomLoggerTransport()],
-      // no pre-build meta
       meta: false,
       msg: "app - request - {{req.ip}} - {{res.statusCode}} - {{req.method}} - {{res.responseTime}}ms - {{req.url}} - {{req.headers['user-agent']}}",
-      // use the default express/morgan request formatting
-      // enabling this will override any msg if true
       expressFormat: false,
-      // force colorize when using custom msg
       colorize: true,
-      // set log level according to response status
       statusLevels: true,
     });
   }
