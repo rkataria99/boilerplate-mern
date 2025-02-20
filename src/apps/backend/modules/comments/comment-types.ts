@@ -3,7 +3,6 @@ import { HttpStatusCodes } from '../http';
 
 export class Comment {
   id: string;
-  account: string;
   taskId: string;
   userId: string;
   content: string;
@@ -12,35 +11,27 @@ export class Comment {
 }
 
 export type GetAllCommentsParams = {
-  accountId?: string;
-  taskId?: string;
+  taskId: string;
   page?: number;
   size?: number;
 };
 
 export type GetCommentParams = {
-  accountId: string;
-  taskId: string;
   commentId: string;
 };
 
 export type CreateCommentParams = {
-  accountId: string;
   taskId: string;
   userId: string;
   content: string;
 };
 
 export type UpdateCommentParams = {
-  accountId: string;
-  taskId: string;
   commentId: string;
   content: string;
 };
 
 export type DeleteCommentParams = {
-  accountId: string;
-  taskId: string;
   commentId: string;
 };
 
@@ -57,7 +48,7 @@ export class CommentNotFoundError extends ApplicationError {
   code: CommentErrorCode;
 
   constructor(commentId: string) {
-    super(`Comment with ID ${commentId} not found.`);
+    super(`Comment with commentId ${commentId} not found.`);
     this.code = CommentErrorCode.NOT_FOUND;
     this.httpStatusCode = HttpStatusCodes.NOT_FOUND;
   }

@@ -1,29 +1,22 @@
-import CommentReader from './internal/reader';
-import CommentWriter from './internal/writer';
-import { Comment } from './types';
+import {
+  CreateCommentParams,
+  DeleteCommentParams,
+  UpdateCommentParams,
+  Comment,
+} from './types';
 
-export class CommentService {
-  private commentReader: CommentReader;
-  private commentWriter: CommentWriter;
+import CommentWriter from './internal/comment-writer';
 
-  constructor(commentModel: any) {
-    this.commentReader = new CommentReader(commentModel);
-    this.commentWriter = new CommentWriter(commentModel);
+export default class CommentService {
+  static async createComment(params: CreateCommentParams): Promise<Comment> {
+    return CommentWriter.createComment(params);
   }
 
-  public async getCommentsByTask(taskId: string): Promise<Comment[]> {
-    return this.commentReader.getCommentsByTask(taskId);
+  static async updateComment(params: UpdateCommentParams): Promise<Comment> {
+    return CommentWriter.updateComment(params);
   }
 
-  public async addComment(taskId: string, userId: string, content: string) {
-    return this.commentWriter.createComment(taskId, userId, content);
-  }
-
-  public async editComment(commentId: string, content: string) {
-    return this.commentWriter.updateComment(commentId, content);
-  }
-
-  public async removeComment(commentId: string) {
-    return this.commentWriter.deleteComment(commentId);
+  static async deleteComment(params: DeleteCommentParams): Promise<void> {
+    return CommentWriter.deleteComment(params);
   }
 }

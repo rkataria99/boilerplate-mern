@@ -1,4 +1,4 @@
-import { CommentDB } from './store/db';
+import { CommentDB } from './store/comment-db';
 import { Model } from 'mongoose';
 
 export default class CommentWriter {
