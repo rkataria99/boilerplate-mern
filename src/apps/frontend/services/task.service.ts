@@ -1,7 +1,6 @@
-// task-service.ts
 import { ApiError, ApiResponse } from '../types';
 import { JsonObject } from '../types/common-types';
-import { Task as TaskType, Comment } from '../types/task';
+import { Task as TaskType } from '../types/task';
 
 import { getAccessTokenFromStorage } from '../utils/storage-util';
 import APIService from './api.service';

@@ -1,49 +1,106 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Comment } from '../types/comment';
+import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
 import CommentService from '../services/comment.services';
+import { ApiResponse, AsyncError } from '../types';
+import { Comment } from '../types/comment';
+import useAsync from './async.hook';
 
-interface CommentContextType {
-  comments: Comment[];
-  getComments: (taskId: string) => Promise<void>;
-  createComment: (taskId: string, userId: string, text: string) => Promise<void>;
-  updateComment: (commentId: string, text: string) => Promise<void>;
+type CommentContextType = {
+  addComment: (taskId: string, text: string) => Promise<Comment>;
+  addCommentError: AsyncError;
   deleteComment: (commentId: string) => Promise<void>;
-}
+  deleteCommentError: AsyncError;
+  updateComment: (commentId: string, text: string) => Promise<Comment>;
+  updateCommentError: AsyncError;
+  getComments: (taskId: string) => Promise<Comment[]>;
+  getCommentsError: AsyncError;
+  isAddCommentLoading: boolean;
+  isDeleteCommentLoading: boolean;
+  isUpdateCommentLoading: boolean;
+  isGetCommentsLoading: boolean;
+  setCommentsList: React.Dispatch<React.SetStateAction<Comment[]>>;
+  comments: Comment[];
+  commentsList: Comment[];
+};
 
-const CommentContext = createContext<CommentContextType | undefined>(undefined);
+const CommentContext = createContext<CommentContextType | null>(null);
 
-export const CommentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+const commentService = new CommentService();
 
-  const getComments = async (taskId: string) => {
-    const data = await CommentService.getComments(taskId);
-    setComments(Array.isArray(data) ? data : []); // ✅ Ensure always an array
+export const useCommentContext = (): CommentContextType => useContext(CommentContext)!;
+
+const addCommentFn = async (taskId: string, text: string): Promise<ApiResponse<Comment>> => 
+  commentService.addComment(taskId, text);
+
+const updateCommentFn = async (commentId: string, text: string): Promise<ApiResponse<Comment>> => 
+  commentService.updateComment(commentId, text);
+
+const deleteCommentFn = async (commentId: string): Promise<ApiResponse<void>> => 
+  commentService.deleteComment(commentId);
+
+export const CommentProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const [commentsList, setCommentsList] = useState<Comment[]>([]);
+
+  const getCommentsFn = async (taskId: string): Promise<ApiResponse<Comment[]>> => {
+    const response = await commentService.getComments(taskId);
+    setCommentsList(response.data);
+    return response;
   };
 
-  const createComment = async (taskId: string, userId: string, text: string) => {
-    const newComment = await CommentService.createComment(taskId, userId, text);
-    if (newComment && newComment.id) setComments([...comments, newComment]); // ✅ Prevent undefined issues
-  };
+  const {
+    asyncCallback: getComments,
+    error: getCommentsError,
+    isLoading: isGetCommentsLoading,
+    result: comments,
+  } = useAsync(getCommentsFn);
 
-  const updateComment = async (commentId: string, text: string) => {
-    const updatedComment = await CommentService.updateComment(commentId, text);
-    setComments(comments.map((comment) => (comment.id === commentId ? updatedComment : comment))); // ✅ Safe update
-  };
+  const {
+    asyncCallback: addComment,
+    error: addCommentError,
+    isLoading: isAddCommentLoading,
+  } = useAsync(addCommentFn);
 
-  const deleteComment = async (commentId: string) => {
-    await CommentService.deleteComment(commentId);
-    setComments(comments.filter((comment) => comment.id !== commentId));
+  const {
+    asyncCallback: updateComment,
+    error: updateCommentError,
+    isLoading: isUpdateCommentLoading,
+  } = useAsync(updateCommentFn);
+
+  const {
+    asyncCallback: deleteComment,
+    error: deleteCommentError,
+    isLoading: isDeleteCommentLoading,
+  } = useAsync(deleteCommentFn);
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await deleteComment(commentId);
+      setCommentsList((prevComments) => prevComments.filter(comment => comment.id !== commentId));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
   };
 
   return (
-    <CommentContext.Provider value={{ comments, getComments, createComment, updateComment, deleteComment }}>
+    <CommentContext.Provider
+      value={{
+        addComment,
+        addCommentError,
+        deleteComment: handleDeleteComment,
+        deleteCommentError,
+        updateComment,
+        updateCommentError,
+        getComments,
+        getCommentsError,
+        isAddCommentLoading,
+        isDeleteCommentLoading,
+        isUpdateCommentLoading,
+        isGetCommentsLoading,
+        setCommentsList,
+        comments,
+        commentsList,
+      }}
+    >
       {children}
     </CommentContext.Provider>
   );
-};
-
-export const useCommentContext = () => {
-  const context = useContext(CommentContext);
-  if (!context) throw new Error('useCommentContext must be used within CommentProvider');
-  return context;
 };

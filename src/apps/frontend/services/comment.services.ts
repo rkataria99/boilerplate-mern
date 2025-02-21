@@ -1,47 +1,71 @@
+import { ApiError, ApiResponse } from '../types';
+import { JsonObject } from '../types/common-types';
+import { Comment as CommentType } from '../types/comment';
+import { getAccessTokenFromStorage } from '../utils/storage-util';
 import APIService from './api.service';
 
-class CommentService extends APIService {
-  constructor() {
-    super();
-  }
-
-  async getComments(taskId: string) {
+export default class CommentService extends APIService {
+  addComment = async (taskId: string, text: string): Promise<ApiResponse<CommentType>> => {
     try {
-      const response = await this.apiClient.get(`/comments/${taskId}`);
-      return Array.isArray(response.data) ? response.data : []; // ✅ Ensure it's an array
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-      return []; // Return empty array on failure
+      const userAccessToken = getAccessTokenFromStorage();
+      const response = await this.apiClient.post(
+        `/tasks/${taskId}/comments`,
+        { text },
+        {
+          headers: {
+            Authorization: `Bearer ${userAccessToken.token}`,
+          },
+        },
+      );
+      return new ApiResponse(response.data as CommentType, undefined);
+    } catch (e) {
+      return new ApiResponse(undefined, new ApiError(e.response.data as JsonObject));
     }
-  }
+  };
 
-  async createComment(taskId: string, userId: string, text: string) {
+  getComments = async (taskId: string): Promise<ApiResponse<CommentType[]>> => {
     try {
-      const response = await this.apiClient.post(`/comments`, { taskId, userId, text });
-      return response.data || {}; // Prevent undefined
-    } catch (error) {
-      console.error("Error creating comment:", error);
-      return {};
+      const userAccessToken = getAccessTokenFromStorage();
+      const response = await this.apiClient.get(`/tasks/${taskId}/comments`, {
+        headers: {
+          Authorization: `Bearer ${userAccessToken.token}`,
+        },
+      });
+      return new ApiResponse(response.data as CommentType[], undefined);
+    } catch (e) {
+      return new ApiResponse(undefined, new ApiError(e.response.data as JsonObject));
     }
-  }
+  };
 
-  async updateComment(commentId: string, text: string) {
+  updateComment = async (commentId: string, text: string): Promise<ApiResponse<CommentType>> => {
     try {
-      const response = await this.apiClient.put(`/comments/${commentId}`, { text });
-      return response.data || {}; // Prevent undefined
-    } catch (error) {
-      console.error("Error updating comment:", error);
-      return {};
+      const userAccessToken = getAccessTokenFromStorage();
+      const response = await this.apiClient.patch(
+        `/comments/${commentId}`,
+        { text },
+        {
+          headers: {
+            Authorization: `Bearer ${userAccessToken.token}`,
+          },
+        },
+      );
+      return new ApiResponse(response.data as CommentType, undefined);
+    } catch (e) {
+      return new ApiResponse(undefined, new ApiError(e.response.data as JsonObject));
     }
-  }
+  };
 
-  async deleteComment(commentId: string) {
+  deleteComment = async (commentId: string): Promise<ApiResponse<void>> => {
     try {
-      await this.apiClient.delete(`/comments/${commentId}`);
-    } catch (error) {
-      console.error("Error deleting comment:", error);
+      const userAccessToken = getAccessTokenFromStorage();
+      await this.apiClient.delete(`/comments/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${userAccessToken.token}`,
+        },
+      });
+      return new ApiResponse(undefined, undefined);
+    } catch (e) {
+      return new ApiResponse(undefined, new ApiError(e.response.data as JsonObject));
     }
-  }
+  };
 }
-
-export default new CommentService();

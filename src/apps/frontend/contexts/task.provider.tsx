@@ -3,6 +3,7 @@ import React, {
   PropsWithChildren,
   useContext,
   useState,
+  //useEffect,
 } from 'react';
 
 import TaskService from '../services/task.service';
@@ -11,6 +12,7 @@ import { Task } from '../types/task';
 
 import useAsync from './async.hook';
 
+// Define the TaskContextType interface
 type TaskContextType = {
   addTask: (title: string, description: string) => Promise<Task>;
   addTaskError: AsyncError;
@@ -35,7 +37,7 @@ const TaskContext = createContext<TaskContextType | null>(null);
 
 const taskService = new TaskService();
 
-export const useTaskContext = (): TaskContextType => useContext(TaskContext);
+export const useTaskContext = (): TaskContextType => useContext(TaskContext)!;
 
 const addTaskFn = async (
   title: string,
@@ -86,12 +88,21 @@ export const TaskProvider: React.FC<PropsWithChildren> = ({ children }) => {
     isLoading: isDeleteTaskLoading,
   } = useAsync(deleteTaskFn);
 
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await deleteTask(taskId);
+      setTasksList((prevTasks) => prevTasks.filter(task => task.id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <TaskContext.Provider
       value={{
         addTask,
         addTaskError,
-        deleteTask,
+        deleteTask: handleDeleteTask,
         deleteTaskError,
         getTasks,
         getTasksError,

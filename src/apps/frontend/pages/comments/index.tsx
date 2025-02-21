@@ -4,27 +4,49 @@ import toast from 'react-hot-toast';
 import { HeadingMedium, VerticalStackLayout } from '../../components';
 import { useCommentContext } from '../../contexts/comments.provider';
 import { AsyncError } from '../../types';
-import { useParams } from 'react-router-dom';
 
 import CommentHeader from './comment-header';
 import CommentSection from './comment-section';
 
-const Comments: React.FC = () => {
-  const { taskId } = useParams<{ taskId: string }>();
-  const { getComments, comments } = useCommentContext();
+interface CommentsProps {
+  taskId: string;
+}
+
+const Comments: React.FC<CommentsProps> = ({ taskId }) => {
+  const onError = (error: AsyncError) => {
+    toast.error(error.message);
+  };
+
+  const {
+    deleteComment,
+    getComments,
+    isGetCommentsLoading,
+    setCommentsList,
+    commentsList,
+  } = useCommentContext();
 
   useEffect(() => {
-    if (taskId) {
-      getComments(taskId).catch((error) => toast.error((error as AsyncError).message));
-    }
+    getComments(taskId).catch((error) => onError(error as AsyncError));
   }, [taskId]);
+
+  const handleDeleteComment = (commentId: string) => {
+    deleteComment(taskId, commentId)
+      .then(() => {
+        setCommentsList(commentsList.filter((comment) => comment.id !== commentId));
+      })
+      .catch((error) => onError(error as AsyncError));
+  };
 
   return (
     <div className="mx-auto max-w-5xl">
       <VerticalStackLayout gap={7}>
         <HeadingMedium>Comments</HeadingMedium>
-        <CommentHeader />
-        <CommentSection comments={comments} />
+        <CommentHeader taskId={taskId} onError={onError} />
+        <CommentSection
+          comments={commentsList}
+          isGetCommentsLoading={isGetCommentsLoading}
+          handleDeleteComment={handleDeleteComment}
+        />
       </VerticalStackLayout>
     </div>
   );

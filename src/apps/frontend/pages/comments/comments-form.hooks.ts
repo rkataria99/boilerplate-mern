@@ -1,32 +1,97 @@
-import { useFormik } from 'formik';
-import CommentService from '../../services/comment.services';
+import { FormikProps, useFormik } from 'formik';
+import * as Yup from 'yup';
 
-interface UseCommentFormProps {
+import constant from '../../constants';
+import { useCommentContext } from '../../contexts';
+import { AsyncError } from '../../types';
+import { Comment, CreateCommentParams } from '../../types/comment';
+
+interface CommentFormProps {
+  onError?: (error: AsyncError) => void;
   onSuccess?: () => void;
-  onError?: (error: Error) => void;
-  initialText?: string;
-  commentId?: string;
   taskId: string;
-  userId: string;
 }
 
-const useCommentForm = ({ onSuccess, onError, initialText = '', commentId, taskId, userId }: UseCommentFormProps) => {
-  return useFormik({
-    initialValues: { text: initialText },
-    onSubmit: async (values, { resetForm }) => {
-      try {
-        if (commentId) {
-          await CommentService.updateComment(commentId, values.text);
-        } else {
-          await CommentService.createComment(taskId, userId, values.text);
-        }
-        resetForm();
-        onSuccess?.();
-      } catch (error) {
-        onError?.(error as Error);
-      }
+const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
+  const {
+    addComment,
+    setCommentsList,
+    commentsList,
+    updateComment,
+    isAddCommentLoading,
+    isUpdateCommentLoading,
+  } = useCommentContext();
+
+  const setFormikFieldValue = (
+    formik: FormikProps<Comment>,
+    fieldName: keyof Comment,
+    data: string,
+  ) => {
+    formik
+      .setFieldValue(fieldName, data)
+      .then()
+      .catch((err) => {
+        onError?.(err as AsyncError);
+      });
+  };
+
+  const updateCommentFormik = useFormik<Comment>({
+    initialValues: {
+      id: '',
+      taskId: taskId,
+      userId: '',
+      text: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: '',
+    },
+    validationSchema: Yup.object({
+      text: Yup.string()
+        .min(constant.COMMENT_MIN_LENGTH, constant.COMMENT_VALIDATION_ERROR)
+        .required(constant.COMMENT_VALIDATION_ERROR),
+    }),
+    onSubmit: (values) => {
+      updateComment(taskId, values.id, values.text)
+        .then((response) => {
+          const newUpdatedComments = commentsList.map((commentData) =>
+            commentData.id === values.id ? response : commentData
+          );
+          setCommentsList(newUpdatedComments);
+          onSuccess?.();
+        })
+        .catch((error) => onError?.(error as AsyncError));
     },
   });
+
+  const addCommentFormik = useFormik<CreateCommentParams>({
+    initialValues: {
+      taskId: taskId,
+      userId: '',
+      text: '',
+    },
+    validationSchema: Yup.object({
+      text: Yup.string()
+        .min(constant.COMMENT_MIN_LENGTH, constant.COMMENT_VALIDATION_ERROR)
+        .required(constant.COMMENT_VALIDATION_ERROR),
+    }),
+    onSubmit: (values) => {
+      addComment(taskId, values.text)
+        .then((newComment) => {
+          setCommentsList([...commentsList, newComment]);
+          onSuccess?.();
+        })
+        .catch((error) => {
+          onError?.(error as AsyncError);
+        });
+    },
+  });
+
+  return {
+    addCommentFormik,
+    isAddCommentLoading,
+    isUpdateCommentLoading,
+    setFormikFieldValue,
+    updateCommentFormik,
+  };
 };
 
 export default useCommentForm;

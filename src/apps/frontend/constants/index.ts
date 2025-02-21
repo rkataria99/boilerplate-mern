@@ -21,6 +21,12 @@ const constant = {
   TITLE_MIN_LENGTH: 3,
   TITLE_VALIDATION_ERROR: 'Title should be at least 3 characters long',
   TOASTER_AUTO_HIDE_DURATION: 3000,
+
+  // Comment-related constants
+  COMMENT_MIN_LENGTH: 1,
+  COMMENT_MAX_LENGTH: 500,
+  COMMENT_VALIDATION_ERROR: 'Comment should be between 1 and 500 characters long',
+  COMMENT_DELETE_CONFIRMATION: 'Are you sure you want to delete this comment?',
 };
 
 export default constant;

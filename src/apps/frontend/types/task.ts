@@ -1,12 +1,12 @@
-// task.ts
-export interface Comment {  
+import { Comment } from './comment';
+/*export interface Comment {  
   id: string;
   taskId: string;
   userId: string;
   text: string;
   createdAt: string;
   updatedAt?: string;
-}
+}*/
 
 export enum TaskOperationType {
   ADD = 'add',
