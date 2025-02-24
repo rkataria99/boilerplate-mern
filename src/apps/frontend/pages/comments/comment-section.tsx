@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 
 import {
   Button,
@@ -32,7 +31,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   comments,
 }) => {
   const [updateCommentModal, setUpdateCommentModal] = useState(false);
-  const navigate = useNavigate();
 
   const onSuccess = () => {
     toast.success('Comment has been updated successfully');
@@ -62,17 +60,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     <VerticalStackLayout gap={7}>
       {comments.length > 0 && (
         <HeadingSmall>
-          Comments ({comments.length >= 10 ? Math.floor(comments.length / 10) : '0'}
-          {comments.length % 10})
+          Comments ({comments.length})
         </HeadingSmall>
       )}
 
       {comments.map((comment) => (
         <div
-          className="relative rounded-sm border border-stroke bg-white p-9 shadow-default"
+          className="relative cursor-pointer rounded-sm border border-stroke bg-white p-9 shadow-default"
           key={comment.id}
         >
           <VerticalStackLayout gap={3}>
+            <LabelLarge>{comment.userId}</LabelLarge>
             <ParagraphSmall>{comment.text}</ParagraphSmall>
           </VerticalStackLayout>
 

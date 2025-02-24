@@ -32,10 +32,11 @@ const addCommentFn = async (taskId: string, text: string): Promise<ApiResponse<C
   commentService.addComment(taskId, text);
 
 const updateCommentFn = async (commentId: string, text: string): Promise<ApiResponse<Comment>> => 
-  commentService.updateComment(commentId, text);
+  commentService.updateComment({ commentId, text });  // ✅ Pass an object
 
 const deleteCommentFn = async (commentId: string): Promise<ApiResponse<void>> => 
-  commentService.deleteComment(commentId);
+  commentService.deleteComment(commentId);  // ✅ Pass only commentId as string
+
 
 export const CommentProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [commentsList, setCommentsList] = useState<Comment[]>([]);

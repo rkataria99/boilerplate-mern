@@ -30,7 +30,7 @@ const Comments: React.FC<CommentsProps> = ({ taskId }) => {
   }, [taskId]);
 
   const handleDeleteComment = (commentId: string) => {
-    deleteComment(taskId, commentId)
+    deleteComment(commentId) // Now it matches deleteComment function
       .then(() => {
         setCommentsList(commentsList.filter((comment) => comment.id !== commentId));
       })
@@ -41,7 +41,7 @@ const Comments: React.FC<CommentsProps> = ({ taskId }) => {
     <div className="mx-auto max-w-5xl">
       <VerticalStackLayout gap={7}>
         <HeadingMedium>Comments</HeadingMedium>
-        <CommentHeader taskId={taskId} onError={onError} />
+        <CommentHeader taskId={taskId} onError={onError} /> {/* ✅ taskId is now correctly passed */}
         <CommentSection
           comments={commentsList}
           isGetCommentsLoading={isGetCommentsLoading}

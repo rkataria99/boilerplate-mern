@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import constant from '../../constants';
 import { useCommentContext } from '../../contexts';
 import { AsyncError } from '../../types';
-import { Comment, CreateCommentParams } from '../../types/comment';
+import { Comment } from '../../types/comment';
 
 interface CommentFormProps {
   onError?: (error: AsyncError) => void;
@@ -49,7 +49,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      updateComment(values.id, { text: values.text })
+      updateComment(values.id, values.text) // Pass `values.text` instead of an object
         .then((response) => {
           const newUpdatedComments = commentsList.map((commentData) =>
             commentData.id === values.id ? response : commentData
@@ -61,11 +61,14 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
     },
   });
 
-  const addCommentFormik = useFormik<CreateCommentParams>({
+  const addCommentFormik = useFormik<Comment>({
     initialValues: {
+      id: '',
       taskId: '',
       userId: '',
       text: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: '',
     },
     validationSchema: Yup.object({
       text: Yup.string()
@@ -73,7 +76,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      addComment(values) // Fixed: Pass a single object
+      addComment(values.taskId, values.text) // Pass separate arguments
         .then((newComment) => {
           setCommentsList([...commentsList, newComment]);
           onSuccess?.();

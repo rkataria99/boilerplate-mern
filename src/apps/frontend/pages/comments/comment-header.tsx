@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-
 import { Button, HeadingLarge } from '../../components';
 import { AsyncError } from '../../types';
 import { ButtonSize } from '../../types/button';
-
 import CommentModal from './comment-modal';
 import useCommentForm from './comments-form.hooks';
 
 interface CommentHeaderProps {
+  taskId?: string; // ✅ Made optional to avoid unused prop warning
   onError?: (error: AsyncError) => void;
 }
 
-const CommentHeader: React.FC<CommentHeaderProps> = ({ onError }) => {
+const CommentHeader: React.FC<CommentHeaderProps> = ({ taskId, onError }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onSuccess = () => {
@@ -21,6 +20,7 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({ onError }) => {
   };
 
   const { addCommentFormik } = useCommentForm({
+    ...(taskId ? { taskId } : {}), // ✅ Pass taskId only if it exists
     onError,
     onSuccess,
   });

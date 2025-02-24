@@ -15,7 +15,7 @@ export default class CommentService extends APIService {
           headers: {
             Authorization: `Bearer ${userAccessToken.token}`,
           },
-        },
+        }
       );
       return new ApiResponse(response.data as CommentType, undefined);
     } catch (e) {
@@ -37,7 +37,7 @@ export default class CommentService extends APIService {
     }
   };
 
-  updateComment = async (commentId: string, text: string): Promise<ApiResponse<CommentType>> => {
+  updateComment = async ({ commentId, text }: { commentId: string; text: string }): Promise<ApiResponse<CommentType>> => {
     try {
       const userAccessToken = getAccessTokenFromStorage();
       const response = await this.apiClient.patch(
@@ -47,7 +47,7 @@ export default class CommentService extends APIService {
           headers: {
             Authorization: `Bearer ${userAccessToken.token}`,
           },
-        },
+        }
       );
       return new ApiResponse(response.data as CommentType, undefined);
     } catch (e) {
