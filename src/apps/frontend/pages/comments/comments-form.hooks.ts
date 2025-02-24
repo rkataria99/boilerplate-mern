@@ -9,10 +9,9 @@ import { Comment, CreateCommentParams } from '../../types/comment';
 interface CommentFormProps {
   onError?: (error: AsyncError) => void;
   onSuccess?: () => void;
-  taskId: string;
 }
 
-const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
+const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
   const {
     addComment,
     setCommentsList,
@@ -38,7 +37,7 @@ const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
   const updateCommentFormik = useFormik<Comment>({
     initialValues: {
       id: '',
-      taskId: taskId,
+      taskId: '',
       userId: '',
       text: '',
       createdAt: new Date().toISOString(),
@@ -50,7 +49,7 @@ const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      updateComment(taskId, values.id, values.text)
+      updateComment(values.id, { text: values.text })
         .then((response) => {
           const newUpdatedComments = commentsList.map((commentData) =>
             commentData.id === values.id ? response : commentData
@@ -64,7 +63,7 @@ const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
 
   const addCommentFormik = useFormik<CreateCommentParams>({
     initialValues: {
-      taskId: taskId,
+      taskId: '',
       userId: '',
       text: '',
     },
@@ -74,7 +73,7 @@ const useCommentForm = ({ onError, onSuccess, taskId }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      addComment(taskId, values.text)
+      addComment(values) // Fixed: Pass a single object
         .then((newComment) => {
           setCommentsList([...commentsList, newComment]);
           onSuccess?.();

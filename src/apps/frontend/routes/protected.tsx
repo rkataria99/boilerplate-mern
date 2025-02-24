@@ -36,17 +36,16 @@ export const protectedRoutes = [
       },
       {
         path: routes.COMMENTS,
-        element: (
+        element: ({ taskId }: { taskId: string }) => (
           <CommentProvider>
-            <Comments />
+            <Comments taskId={taskId} />
           </CommentProvider>
         ),
       },
-      {
-        path: routes.PROFILE_SETTINGS,
-        element: <ProfileSettings />,
-      },
+      { path: routes.PROFILE_SETTINGS, element: <ProfileSettings /> },
       { path: '*', element: <NotFound /> },
     ],
   },
 ];
+
+export default App;

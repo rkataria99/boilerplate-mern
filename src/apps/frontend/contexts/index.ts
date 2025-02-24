@@ -1,7 +1,10 @@
-import { TaskProvider, useTaskContext } from './task.provider';
 import { AccountProvider, useAccountContext } from './account.provider';
 import { AuthProvider, useAuthContext } from './auth.provider';
-import { ResetPasswordProvider, useResetPasswordContext } from './reset-password.provider';
+import {
+  ResetPasswordProvider,
+  useResetPasswordContext,
+} from './reset-password.provider';
+import { TaskProvider, useTaskContext } from './task.provider';
 import { CommentProvider, useCommentContext } from './comments.provider';
 
 export {
@@ -13,6 +16,6 @@ export {
   useTaskContext,
   ResetPasswordProvider,
   useResetPasswordContext,
-  CommentProvider, 
-  useCommentContext, 
+  CommentProvider,
+  useCommentContext,
 };

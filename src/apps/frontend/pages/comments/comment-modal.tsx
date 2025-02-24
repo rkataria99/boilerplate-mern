@@ -1,7 +1,12 @@
 import { FormikProps } from 'formik';
 import React from 'react';
 
-import { Button, FormControl, Input, VerticalStackLayout } from '../../components';
+import {
+  Button,
+  FormControl,
+  Input,
+  VerticalStackLayout,
+} from '../../components';
 import Modal from '../../components/modal';
 import { AsyncError } from '../../types';
 import { ButtonKind, ButtonSize, ButtonType } from '../../types/button';
@@ -13,7 +18,6 @@ interface CommentModalProps {
   btnText: string;
   formik: FormikProps<Comment>;
   isModalOpen: boolean;
-  taskId: string;
   onError?: (error: AsyncError) => void;
   onSuccess?: () => void;
   setIsModalOpen: (open: boolean) => void;
@@ -23,18 +27,14 @@ const CommentModal: React.FC<CommentModalProps> = ({
   btnText,
   formik,
   isModalOpen,
-  taskId,
   onError,
   onSuccess,
   setIsModalOpen,
 }) => {
-  const { isAddCommentLoading } = useCommentForm({ taskId, onSuccess, onError });
-
-  const handleClick = () => {
-    if (isAddCommentLoading) {
-      setIsModalOpen(false);
-    }
-  };
+  const { isAddCommentLoading } = useCommentForm({
+    onSuccess,
+    onError,
+  });
 
   return (
     <Modal isModalOpen={isModalOpen}>
@@ -43,14 +43,21 @@ const CommentModal: React.FC<CommentModalProps> = ({
           onClick={() => setIsModalOpen(false)}
           kind={ButtonKind.TERTIARY}
           startEnhancer={
-            <img src="assets/svg/close-icon.svg" alt="close-icon" className="fill-current" />
+            <img
+              src="assets/svg/close-icon.svg"
+              alt="close-icon"
+              className="fill-current"
+            />
           }
-        />
+        ></Button>
       </div>
 
       <form onSubmit={formik.handleSubmit}>
         <VerticalStackLayout gap={5}>
-          <FormControl error={formik.touched.text && formik.errors.text} label={'Comment'}>
+          <FormControl
+            error={formik.touched.text && formik.errors.text}
+            label={'Comment'}
+          >
             <Input
               data-testid="text"
               disabled={isAddCommentLoading}
@@ -65,12 +72,8 @@ const CommentModal: React.FC<CommentModalProps> = ({
           </FormControl>
           <Button
             type={ButtonType.SUBMIT}
-            onClick={handleClick}
             isLoading={isAddCommentLoading}
             size={ButtonSize.DEFAULT}
-            startEnhancer={
-              !isAddCommentLoading && <img src="assets/svg/plus-icon.svg" alt="Plus Icon" />
-            }
           >
             {btnText}
           </Button>

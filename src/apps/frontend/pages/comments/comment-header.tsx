@@ -10,10 +10,9 @@ import useCommentForm from './comments-form.hooks';
 
 interface CommentHeaderProps {
   onError?: (error: AsyncError) => void;
-  taskId: string;
 }
 
-const CommentHeader: React.FC<CommentHeaderProps> = ({ onError, taskId }) => {
+const CommentHeader: React.FC<CommentHeaderProps> = ({ onError }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onSuccess = () => {
@@ -24,7 +23,6 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({ onError, taskId }) => {
   const { addCommentFormik } = useCommentForm({
     onError,
     onSuccess,
-    taskId,  // Add taskId to the useCommentForm hook
   });
 
   return (
@@ -48,7 +46,7 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({ onError, taskId }) => {
           formik={addCommentFormik}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
-          btnText={'Add Comment'}
+          btnText="Add Comment"
         />
       </div>
     </div>

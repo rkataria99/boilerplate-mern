@@ -12,8 +12,7 @@ import Dashboard from './dashboard';
 import NotFound from './not-found/not-found.page';
 import ProfileSettings from './profile/settings';
 import Tasks from './tasks';
-export { default as Comments } from './comments';
-import { CommentProvider, useCommentContext } from '../contexts/comments.provider';
+import Comments from './comments';
 
 export {
   About,
@@ -29,6 +28,5 @@ export {
   ProfileSettings,
   Signup,
   Tasks,
-  CommentProvider,
-  useCommentContext,
+  Comments,
 };
