@@ -9,13 +9,12 @@ import {
 } from '../types';
 
 import CommentService from '../commentservice';
-import CommentReader from '../internal/comment-reader';
 import { serializeCommentAsJSON } from './comments-serializer';
 
 export default class CommentController {
   getComments = applicationController(
     async (req: Request<GetAllCommentsParams>, res: Response) => {
-      const comments = await CommentReader.getCommentsForTask({
+      const comments = await CommentService.getCommentsForTask({
         accountId: req.accountId,
         taskId: String(req.params.taskId),
         page: Number(req.query.page),
