@@ -11,7 +11,8 @@ const routes = {
   PROFILE_SETTINGS: '/profile/settings',
   SIGNUP: '/signup',
   TASKS: '/tasks',
-  COMMENTS: '/comments/:taskId',
+  //COMMENTS: '/comments/:taskId',
+  COMMENTS: '/tasks/:taskId/comments',
 };
 
 export default routes;

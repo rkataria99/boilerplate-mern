@@ -17,7 +17,7 @@ export default class CommentController {
     async (req: Request<GetAllCommentsParams>, res: Response) => {
       const comments = await CommentReader.getCommentsForTask({
         accountId: req.accountId,
-        taskId: String(req.query.taskId),
+        taskId: String(req.params.taskId),
         page: Number(req.query.page),
         size: Number(req.query.size),
       });
@@ -35,11 +35,11 @@ export default class CommentController {
         content: req.body.content,
       });
 
-      const commentJSON = serializeCommentAsJSON(comment);
-      res.status(HttpStatusCodes.CREATED).send(commentJSON);
+      res.status(HttpStatusCodes.CREATED).send(serializeCommentAsJSON(comment));
     }
   );
 
+  // ✅ Restored `updateComment`
   updateComment = applicationController(
     async (req: Request<UpdateCommentParams>, res: Response) => {
       const comment: Comment = await CommentService.updateComment({
@@ -49,11 +49,11 @@ export default class CommentController {
         content: req.body.content,
       });
 
-      const commentJSON = serializeCommentAsJSON(comment);
-      res.status(HttpStatusCodes.OK).send(commentJSON);
+      res.status(HttpStatusCodes.OK).send(serializeCommentAsJSON(comment));
     }
   );
 
+  // ✅ Restored `deleteComment`
   deleteComment = applicationController(
     async (req: Request<DeleteCommentParams>, res: Response) => {
       await CommentService.deleteComment({

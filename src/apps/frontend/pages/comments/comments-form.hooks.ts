@@ -49,7 +49,14 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      updateComment(values.id, values.text) // Pass `values.text` instead of an object
+      console.log("Updating comment for task:", values.taskId); // ✅ Debugging
+      if (!values.taskId) {
+        console.error("Task ID is missing in updateComment");
+        onError?.({ message: "Task ID is required for updating comment" } as AsyncError);
+        return;
+      }
+
+      updateComment(values.id, values.taskId, values.text)
         .then((response) => {
           const newUpdatedComments = commentsList.map((commentData) =>
             commentData.id === values.id ? response : commentData
@@ -76,7 +83,14 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      addComment(values.taskId, values.text) // Pass separate arguments
+      console.log("Adding comment for task:", values.taskId); // ✅ Debugging
+      if (!values.taskId) {
+        console.error("Task ID is missing in addComment");
+        onError?.({ message: "Task ID is required for adding comment" } as AsyncError);
+        return;
+      }
+
+      addComment(values.taskId, values.text)
         .then((newComment) => {
           setCommentsList([...commentsList, newComment]);
           onSuccess?.();

@@ -21,14 +21,14 @@ interface CommentSectionProps {
   handleDeleteComment: (commentId: string) => void;
   isGetCommentsLoading: boolean;
   onError?: (error: AsyncError) => void;
-  comments: Comment[];
+  comments?: Comment[];  // ✅ Made optional to prevent undefined errors
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({
   handleDeleteComment,
   isGetCommentsLoading,
   onError,
-  comments,
+  comments = [], // ✅ Ensuring comments is always an array
 }) => {
   const [updateCommentModal, setUpdateCommentModal] = useState(false);
 
@@ -43,7 +43,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   });
 
   const handleCommentOperation = (comment: Comment) => {
-    setUpdateCommentModal(!updateCommentModal);
+    setUpdateCommentModal(true);
     setFormikFieldValue(updateCommentFormik, 'text', comment.text);
     setFormikFieldValue(updateCommentFormik, 'id', comment.id);
   };
@@ -59,54 +59,58 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   return (
     <VerticalStackLayout gap={7}>
       {comments.length > 0 && (
-        <HeadingSmall>
-          Comments ({comments.length})
-        </HeadingSmall>
+        <HeadingSmall>Comments ({comments.length})</HeadingSmall>
       )}
 
-      {comments.map((comment) => (
-        <div
-          className="relative cursor-pointer rounded-sm border border-stroke bg-white p-9 shadow-default"
-          key={comment.id}
-        >
-          <VerticalStackLayout gap={3}>
-            <LabelLarge>{comment.userId}</LabelLarge>
-            <ParagraphSmall>{comment.text}</ParagraphSmall>
-          </VerticalStackLayout>
+      {Array.isArray(comments) && comments.length > 0 ? (
+        comments.map((comment) => (
+          comment ? (
+            <div
+              className="relative cursor-pointer rounded-sm border border-stroke bg-white p-9 shadow-default"
+              key={comment.id ?? Math.random()}
+            >
+              <VerticalStackLayout gap={3}>
+                <LabelLarge>{comment.userId}</LabelLarge>
+                <ParagraphSmall>{comment.text}</ParagraphSmall>
+              </VerticalStackLayout>
 
-          <div className="absolute right-4 top-4">
-            <MenuItem>
-              <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.stopPropagation();
-                  handleCommentOperation(comment);
-                }}
-                kind={ButtonKind.SECONDARY}
-                size={ButtonSize.DEFAULT}
-                startEnhancer={
-                  <img src="assets/svg/edit-icon.svg" alt="Edit comment" />
-                }
-              >
-                Edit
-              </Button>
+              <div className="absolute right-4 top-4">
+                <MenuItem>
+                  <Button
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      handleCommentOperation(comment);
+                    }}
+                    kind={ButtonKind.SECONDARY}
+                    size={ButtonSize.DEFAULT}
+                    startEnhancer={
+                      <img src="assets/svg/edit-icon.svg" alt="Edit comment" />
+                    }
+                  >
+                    Edit
+                  </Button>
 
-              <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.stopPropagation();
-                  handleDeleteComment(comment.id);
-                }}
-                kind={ButtonKind.SECONDARY}
-                size={ButtonSize.DEFAULT}
-                startEnhancer={
-                  <img src="assets/svg/delete-icon.svg" alt="Delete comment" />
-                }
-              >
-                Delete
-              </Button>
-            </MenuItem>
-          </div>
-        </div>
-      ))}
+                  <Button
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      handleDeleteComment(comment.id);
+                    }}
+                    kind={ButtonKind.SECONDARY}
+                    size={ButtonSize.DEFAULT}
+                    startEnhancer={
+                      <img src="assets/svg/delete-icon.svg" alt="Delete comment" />
+                    }
+                  >
+                    Delete
+                  </Button>
+                </MenuItem>
+              </div>
+            </div>
+          ) : null
+        ))
+      ) : (
+        <ParagraphSmall>No comments available</ParagraphSmall>
+      )}
 
       <CommentModal
         formik={updateCommentFormik}
