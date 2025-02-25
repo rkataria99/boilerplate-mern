@@ -71,7 +71,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
   const addCommentFormik = useFormik<Comment>({
     initialValues: {
       id: '',
-      taskId: '',
+      taskId: '',  // ✅ Ensuring taskId is properly assigned
       userId: '',
       text: '',
       createdAt: new Date().toISOString(),
@@ -85,7 +85,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
     onSubmit: (values) => {
       console.log("Adding comment for task:", values.taskId); // ✅ Debugging
       if (!values.taskId) {
-        console.error("Task ID is missing in addComment");
+        console.error("❌ Task ID is missing in addComment");
         onError?.({ message: "Task ID is required for adding comment" } as AsyncError);
         return;
       }

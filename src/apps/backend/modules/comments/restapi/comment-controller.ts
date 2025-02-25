@@ -39,7 +39,6 @@ export default class CommentController {
     }
   );
 
-  // ✅ Restored `updateComment`
   updateComment = applicationController(
     async (req: Request<UpdateCommentParams>, res: Response) => {
       const comment: Comment = await CommentService.updateComment({
@@ -53,7 +52,6 @@ export default class CommentController {
     }
   );
 
-  // ✅ Restored `deleteComment`
   deleteComment = applicationController(
     async (req: Request<DeleteCommentParams>, res: Response) => {
       await CommentService.deleteComment({
