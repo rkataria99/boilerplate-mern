@@ -10,7 +10,7 @@ class CommentService extends APIService {
     try {
       const userAccessToken = getAccessTokenFromStorage();
       const response = await this.apiClient.post(
-        `/tasks/${taskId}/comments`,  // ✅ Ensuring consistency
+        `/tasks/${taskId}/comments`,  
         { text },
         {
           headers: {
@@ -42,7 +42,7 @@ class CommentService extends APIService {
     try {
       const userAccessToken = getAccessTokenFromStorage();
       const response = await this.apiClient.patch(
-        `/tasks/${taskId}/comments/${commentId}`,  // ✅ Consistent with `addComment`
+        `/tasks/${taskId}/comments/${commentId}`,  // in sink with `addComment`
         { text },
         {
           headers: {
@@ -70,7 +70,7 @@ class CommentService extends APIService {
     }
   };
 
-  // ✅ Ensured `getTaskById` follows the same structure
+  
   getTaskById = async (taskId: string): Promise<ApiResponse<TaskType>> => {
     try {
       const userAccessToken = getAccessTokenFromStorage();
@@ -86,5 +86,5 @@ class CommentService extends APIService {
   };
 }
 
-// ✅ Export an instance, not a class
+
 export default new CommentService();

@@ -11,7 +11,7 @@ export default class CommentRouter extends ApplicationRouter {
 
     router.get('/tasks/:taskId/comments', ctrl.getComments);
     router.post('/tasks/:taskId/comments', ctrl.createComment);
-    router.patch('/:id', ctrl.updateComment);
-    router.delete('/:id', ctrl.deleteComment);
+    router.patch('/tasks/:taskId/comments/:id', ctrl.updateComment);
+    router.delete('/tasks/:taskId/comments/:id', ctrl.deleteComment);
   }
 }

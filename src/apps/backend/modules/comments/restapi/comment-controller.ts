@@ -16,7 +16,7 @@ export default class CommentController {
     async (req: Request<GetAllCommentsParams>, res: Response) => {
       const comments = await CommentService.getCommentsForTask({
         accountId: req.accountId,
-        taskId: String(req.params.taskId),
+        taskId: String(req.params.taskId), 
         page: Number(req.query.page),
         size: Number(req.query.size),
       });
@@ -27,9 +27,11 @@ export default class CommentController {
 
   createComment = applicationController(
     async (req: Request<CreateCommentParams>, res: Response) => {
+      console.log("Create Comment Request Body:", req.body); // Debug log
+
       const comment: Comment = await CommentService.createComment({
         accountId: req.accountId,
-        taskId: String(req.body.taskId),
+        taskId: String(req.params.taskId), // instead of req.body.taskId
         userId: String(req.body.userId),
         content: req.body.content,
       });
@@ -40,9 +42,11 @@ export default class CommentController {
 
   updateComment = applicationController(
     async (req: Request<UpdateCommentParams>, res: Response) => {
+      console.log("Update Comment Request Body:", req.body); // Debug log
+
       const comment: Comment = await CommentService.updateComment({
         accountId: req.accountId,
-        taskId: String(req.body.taskId),
+        taskId: String(req.params.taskId), 
         commentId: String(req.params.id),
         content: req.body.content,
       });
@@ -53,9 +57,11 @@ export default class CommentController {
 
   deleteComment = applicationController(
     async (req: Request<DeleteCommentParams>, res: Response) => {
+      console.log("Delete Comment Request Body:", req.body); // Debug log
+
       await CommentService.deleteComment({
         accountId: req.accountId,
-        taskId: String(req.body.taskId),
+        taskId: String(req.params.taskId), 
         commentId: String(req.params.id),
       });
 

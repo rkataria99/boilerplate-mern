@@ -49,7 +49,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      console.log("Updating comment for task:", values.taskId); // ✅ Debugging
+      console.log("Updating comment for task:", values.taskId); 
       if (!values.taskId) {
         console.error("Task ID is missing in updateComment");
         onError?.({ message: "Task ID is required for updating comment" } as AsyncError);
@@ -71,7 +71,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
   const addCommentFormik = useFormik<Comment>({
     initialValues: {
       id: '',
-      taskId: '',  // ✅ Ensuring taskId is properly assigned
+      taskId: '',  
       userId: '',
       text: '',
       createdAt: new Date().toISOString(),
@@ -83,7 +83,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      console.log("Adding comment for task:", values.taskId); // ✅ Debugging
+      console.log("Adding comment for task:", values.taskId); 
       if (!values.taskId) {
         console.error("❌ Task ID is missing in addComment");
         onError?.({ message: "Task ID is required for adding comment" } as AsyncError);

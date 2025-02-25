@@ -21,14 +21,14 @@ interface CommentSectionProps {
   handleDeleteComment: (commentId: string) => void;
   isGetCommentsLoading: boolean;
   onError?: (error: AsyncError) => void;
-  comments?: Comment[];  // ✅ Made optional to prevent undefined errors
+  comments?: Comment[];  // optional to prevent undefined errors
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({
   handleDeleteComment,
   isGetCommentsLoading,
   onError,
-  comments = [], // ✅ Ensuring comments is always an array
+  comments = [], // comments should always b an array
 }) => {
   const [updateCommentModal, setUpdateCommentModal] = useState(false);
 

@@ -13,7 +13,7 @@ import {
 } from '../../components';
 import { AsyncError } from '../../types';
 import { ButtonKind, ButtonSize } from '../../types/button';
-import { Task } from '../../types/task';  // Import the Task type correctly
+import { Task } from '../../types/task';  
 
 import TaskModal from './task-modal';
 import useTaskForm from './tasks-form.hook';
@@ -50,10 +50,10 @@ const TaskSection: React.FC<TaskSectionProps> = ({
     setFormikFieldValue(updateTaskFormik, 'id', task.id);
     setFormikFieldValue(updateTaskFormik, 'description', task.description);
     
-    // Convert comments array to a single string
+    // Converting comments array to a single string
     const commentText = task.comments?.map(comment => comment.text).join(', ') || '';
     
-    // Set the comments field as a string
+    // Setting omments field as a string
     setFormikFieldValue(updateTaskFormik, 'comments', commentText);  // Update this field with a concatenated string
   };
 

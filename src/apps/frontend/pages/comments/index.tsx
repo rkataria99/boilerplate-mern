@@ -7,7 +7,7 @@ import { useCommentContext } from '../../contexts/comments.provider';
 import { AsyncError } from '../../types';
 import CommentHeader from './comment-header';
 import CommentSection from './comment-section';
-import commentService from '../../services/comment.services'; // ✅ Correct import
+import commentService from '../../services/comment.services'; 
 
 const Comments: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
@@ -26,7 +26,7 @@ const Comments: React.FC = () => {
     if (taskId) {
       getComments(taskId).catch((error) => onError(error as AsyncError));
 
-      // ✅ Fetch task details
+      // Fetching task details
       commentService.getTaskById(taskId)
         .then((response) => setTaskDetails(response.data))
         .catch(() => toast.error('Failed to load task details.'));
@@ -39,7 +39,7 @@ const Comments: React.FC = () => {
       return;
     }
 
-    deleteComment(commentId, taskId) // ✅ Passed taskId
+    deleteComment(commentId, taskId) //taskid included
       .then(() => {
         setCommentsList((prev) =>
           prev.filter((comment) => comment.id !== commentId)
@@ -64,7 +64,7 @@ const Comments: React.FC = () => {
             <CommentSection
               comments={commentsList}
               isGetCommentsLoading={isGetCommentsLoading}
-              handleDeleteComment={handleDeleteComment} // ✅ Passed correct function
+              handleDeleteComment={handleDeleteComment} 
             />
           </>
         ) : (

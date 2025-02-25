@@ -35,10 +35,10 @@ export const protectedRoutes = [
         ),
       },
       {
-        path: `/comments/:taskId`, // ✅ Corrected dynamic route
+        path: `/comments/:taskId`, // dynamic route
         element: (
           <CommentProvider>
-            <Comments /> {/* ✅ taskId is now fetched inside Comments.tsx */}
+            <Comments /> {/* taskId is fetched inside Comments.tsx */}
           </CommentProvider>
         ),
       },

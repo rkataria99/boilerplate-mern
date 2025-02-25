@@ -7,7 +7,7 @@ import CommentModal from './comment-modal';
 import useCommentForm from './comments-form.hooks';
 
 interface CommentHeaderProps {
-  taskId?: string; // ✅ Made optional to avoid unused prop warning
+  taskId?: string; // optional to avoid unused prop warning
   onError?: (error: AsyncError) => void;
 }
 
@@ -20,7 +20,7 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({ taskId, onError }) => {
   };
 
   const { addCommentFormik } = useCommentForm({
-    ...(taskId ? { taskId } : {}), // ✅ Pass taskId only if it exists
+    ...(taskId ? { taskId } : {}), // passing taskId only if it exists
     onError,
     onSuccess,
   });
