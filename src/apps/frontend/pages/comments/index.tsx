@@ -26,9 +26,15 @@ const Comments: React.FC = () => {
     if (taskId) {
       getComments(taskId).catch((error) => onError(error as AsyncError));
 
-      // Fetching task details
+      //  response.data used
       commentService.getTaskById(taskId)
-        .then((response) => setTaskDetails(response.data))
+        .then((response) => {
+          if (response.data) {
+            setTaskDetails(response.data);
+          } else {
+            toast.error('Failed to load task details.');
+          }
+        })
         .catch(() => toast.error('Failed to load task details.'));
     }
   }, [taskId]);
@@ -39,7 +45,7 @@ const Comments: React.FC = () => {
       return;
     }
 
-    deleteComment(commentId, taskId) //taskid included
+    deleteComment(commentId, taskId) // Task ID included
       .then(() => {
         setCommentsList((prev) =>
           prev.filter((comment) => comment.id !== commentId)
@@ -51,11 +57,13 @@ const Comments: React.FC = () => {
   return (
     <div className="mx-auto max-w-5xl">
       <VerticalStackLayout gap={7}>
-        {taskDetails && (
+        {taskDetails ? (
           <>
             <HeadingMedium>{taskDetails.title}</HeadingMedium>
             <ParagraphSmall>{taskDetails.description}</ParagraphSmall>
           </>
+        ) : (
+          <p>Loading task details...</p>
         )}
 
         {taskId ? (

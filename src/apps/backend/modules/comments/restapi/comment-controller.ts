@@ -16,7 +16,7 @@ export default class CommentController {
     async (req: Request<GetAllCommentsParams>, res: Response) => {
       const comments = await CommentService.getCommentsForTask({
         accountId: req.accountId,
-        taskId: String(req.params.taskId), 
+        taskId: String(req.params.taskId),
         page: Number(req.query.page),
         size: Number(req.query.size),
       });
@@ -26,46 +26,69 @@ export default class CommentController {
   );
 
   createComment = applicationController(
-    async (req: Request<CreateCommentParams>, res: Response) => {
-      console.log("Create Comment Request Body:", req.body); // Debug log
+    async (req: Request<CreateCommentParams>, res: Response): Promise<void> => {
+      console.log("Create Comment Request Body:", req.body);
 
-      const comment: Comment = await CommentService.createComment({
-        accountId: req.accountId,
-        taskId: String(req.params.taskId), // instead of req.body.taskId
-        userId: String(req.body.userId),
-        content: req.body.content,
-      });
+      const { userId, content } = req.body;
+      const taskId = String(req.params.taskId);
 
-      res.status(HttpStatusCodes.CREATED).send(serializeCommentAsJSON(comment));
+      if (!taskId || !userId || !content) {
+        res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'Missing required fields' });
+        return;
+      }
+
+      try {
+        const comment: Comment = await CommentService.createComment({
+          accountId: req.accountId,
+          taskId,
+          userId,
+          content,
+        });
+
+        res.status(HttpStatusCodes.CREATED).send(serializeCommentAsJSON(comment));
+      } catch (error) {
+        console.error("Error creating comment:", error);
+        res.status(HttpStatusCodes.SERVER_ERROR).json({ message: 'Failed to create comment' }); // ✅ Fixed status code
+      }
     }
   );
 
   updateComment = applicationController(
-    async (req: Request<UpdateCommentParams>, res: Response) => {
-      console.log("Update Comment Request Body:", req.body); // Debug log
+    async (req: Request<UpdateCommentParams>, res: Response): Promise<void> => {
+      console.log("Update Comment Request Body:", req.body);
 
-      const comment: Comment = await CommentService.updateComment({
-        accountId: req.accountId,
-        taskId: String(req.params.taskId), 
-        commentId: String(req.params.id),
-        content: req.body.content,
-      });
+      try {
+        const comment: Comment = await CommentService.updateComment({
+          accountId: req.accountId,
+          taskId: String(req.params.taskId),
+          commentId: String(req.params.id),
+          content: req.body.content,
+        });
 
-      res.status(HttpStatusCodes.OK).send(serializeCommentAsJSON(comment));
+        res.status(HttpStatusCodes.OK).send(serializeCommentAsJSON(comment));
+      } catch (error) {
+        console.error("Error updating comment:", error);
+        res.status(HttpStatusCodes.SERVER_ERROR).json({ message: 'Failed to update comment' }); // ✅ Fixed status code
+      }
     }
   );
 
   deleteComment = applicationController(
-    async (req: Request<DeleteCommentParams>, res: Response) => {
-      console.log("Delete Comment Request Body:", req.body); // Debug log
+    async (req: Request<DeleteCommentParams>, res: Response): Promise<void> => {
+      console.log("Delete Comment Request Body:", req.body);
 
-      await CommentService.deleteComment({
-        accountId: req.accountId,
-        taskId: String(req.params.taskId), 
-        commentId: String(req.params.id),
-      });
+      try {
+        await CommentService.deleteComment({
+          accountId: req.accountId,
+          taskId: String(req.params.taskId),
+          commentId: String(req.params.id),
+        });
 
-      res.sendStatus(HttpStatusCodes.NO_CONTENT);
+        res.sendStatus(HttpStatusCodes.NO_CONTENT);
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+        res.status(HttpStatusCodes.SERVER_ERROR).json({ message: 'Failed to delete comment' }); // ✅ Fixed status code
+      }
     }
   );
 }

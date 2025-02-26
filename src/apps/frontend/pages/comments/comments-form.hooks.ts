@@ -5,6 +5,7 @@ import constant from '../../constants';
 import { useCommentContext } from '../../contexts';
 import { AsyncError } from '../../types';
 import { Comment } from '../../types/comment';
+import { useParams } from 'react-router-dom'; // Added for getting taskId
 
 interface CommentFormProps {
   onError?: (error: AsyncError) => void;
@@ -12,6 +13,8 @@ interface CommentFormProps {
 }
 
 const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
+  const { taskId } = useParams<{ taskId: string }>(); // taskId is taken from URL
+
   const {
     addComment,
     setCommentsList,
@@ -37,7 +40,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
   const updateCommentFormik = useFormik<Comment>({
     initialValues: {
       id: '',
-      taskId: '',
+      taskId: taskId || '', // ✅ Ensuring taskId is pre-filled
       userId: '',
       text: '',
       createdAt: new Date().toISOString(),
@@ -49,7 +52,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      console.log("Updating comment for task:", values.taskId); 
+      console.log("Updating comment for task:", values.taskId);
       if (!values.taskId) {
         console.error("Task ID is missing in updateComment");
         onError?.({ message: "Task ID is required for updating comment" } as AsyncError);
@@ -71,7 +74,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
   const addCommentFormik = useFormik<Comment>({
     initialValues: {
       id: '',
-      taskId: '',  
+      taskId: taskId || '',  // ✅ Ensuring taskId is pre-filled
       userId: '',
       text: '',
       createdAt: new Date().toISOString(),
@@ -83,7 +86,7 @@ const useCommentForm = ({ onError, onSuccess }: CommentFormProps) => {
         .required(constant.COMMENT_VALIDATION_ERROR),
     }),
     onSubmit: (values) => {
-      console.log("Adding comment for task:", values.taskId); 
+      console.log("Adding comment for task:", values.taskId);
       if (!values.taskId) {
         console.error("❌ Task ID is missing in addComment");
         onError?.({ message: "Task ID is required for adding comment" } as AsyncError);
